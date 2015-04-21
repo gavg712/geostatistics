@@ -35,7 +35,7 @@ cor(df)
 #del set de variables independientes, se concluye que se pueden usar todas estas 
 #variables en el modelo de regresión
 
-VIF <- 1/(1-0.7762121)
+VIF <- 1/(1-max(abs(cor(df)-1)))
 VIF
 
 #Cálculo de regresión
