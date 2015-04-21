@@ -2,7 +2,7 @@
 #empleando el commando >>> install.package("nombre_de_librería_faltante", dependecies=TRUE)
 library(gdata)
 
-#importar los datos desde el archivo de texto a R
+#Importar los datos desde el archivo de texto a R
 data <-read.table("L02_data.txt", sep=",",header=TRUE )
 
 print(data) #Para visualizar los datos importados

@@ -1,10 +1,10 @@
 # R puede ser usado como calculadora 
 
-3*5
+ 3*5
 
-45^2
+ 45^2
 
-3/2
+ 3/2
 
 sum(3,5,7,2)
 

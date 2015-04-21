@@ -24,13 +24,13 @@ coordinates(data)=~Lat+Lon
 str(data) #El objeto de datos ha sido transformado desde el data.frame a frame de puntos espaciales
 
 ##Configurar el sistema de coordenadas
-proj4string(data)=CRS("+init=epsg:32717") #32717 es SP para UTM17S
+proj4string(data)=CRS("+init=epsg:2078") #32717 es SP para UTM17S
 
 ##Los numeros epsg pueden consultarse aqui: http://spatialreference.org/ref/
 
 #importar el área de borde desde archivo shp
 border<-readOGR("border.shp","border")
-proj4string(border)=CRS("+init=epsg:32717")
+proj4string(border)=CRS("+init=epsg:2078")
 str(border)
 
 #importar un raster a partir de formato ArcInfo ASCII
@@ -81,10 +81,9 @@ plot(border,add=T)
 box("plot")
 legend(locator(1),legend=c(1:10),fill=heat.colors(10),bty="n",title="Legend",cex=0.7,horiz=T) 
 SpatialPolygonsRescale(layout.scale.bar(),offset=locator(1),scale=100,fill=c("white","black"),plot.grid=F)
-SpatialPolygonsRescale(layout.north.arrow(),offset=locator(1),scale=35,fill=c("black"),plot.grid=F)
 text(locator(1),"0")
 text(locator(1),"100 m")
-
+SpatialPolygonsRescale(layout.north.arrow(),offset=locator(1),scale=35,fill=c("black"),plot.grid=F)
 
 #Para más informacion y detalles:
 # - Applied Spatial Data Analysis with R, R.S. Bivand; E.J. Pebesma; V. Gomez-Rubio (2008)

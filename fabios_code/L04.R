@@ -8,124 +8,126 @@ library(maptools)
 library(gstat)
 library(sp)
 
-setwd("C:\\Users\\FABIO\\Desktop\\lesson4")
+setwd("/home/gabo/Escritorio/geoestadística_R")  #recuerda se puede usar u doble \\ o u simple /
 
-data<-read.table("data.txt",sep="",header=T) #read txt file
-#to read the data can be also used the function in Rcmdr
+data<-read.table("L04_data.txt",sep="",header=T) #leer fichero txt
+#tambien se puede usar la funcion en Rcmdr
 
 str(data)
-#3 columns, the names of the coordinates columns are Lat and Lon
+#3 columnas, los nombres de las columnas de coordenadas son Lat y Lon
 
 coordinates(data)=~Lat+Lon
 
-str(data) #the data object has been transformed from data.frame to SpatialPointsDataFrame
+str(data) #Los objetos son transformados de data.frame a spatialPointsDataFrame
 
-##Set the coordinate system
+##asignar sistema de coordenadas
 proj4string(data)=CRS("+init=epsg:2078")
 
-##the epsg numbers can be found here: http://spatialreference.org/ref/
+##los numeros epsg se pueden encontrar aqui: http://spatialreference.org/ref/
 
-#import area border from ESRI shape file
+#importar el poligno de borde desde un ESRI shape file
 border<-readOGR("border.shp","border")
 proj4string(border)=CRS("+init=epsg:2078")
 str(border)
 
-#import a raster from a ArcInfo ASCII format
+#importar un raster en formato ArcInfo ASCII
 org_mat<-read.asciigrid("org_matter.asc")
 proj4string(org_mat)=CRS("+init=epsg:2078")
 
 
-#Let's first create a prediction grid for the interpolation, starting from the shape file
+#primero creamos una grid de prediccion para interpolacion a partir del borde
 vals <- border@bbox
+vals
 deltaLong <- as.integer((vals[1,2] - vals[1,1]) + 1.5)
 deltaLat <- as.integer((vals[2,2] - vals[2,1]) + 1.5)
-gridRes <-5  #change this value to change the grid size (in metres)
+gridRes <-5  #Este valor es el tamano de celda en metros
 gridSizeX <- deltaLong / gridRes
 gridSizeY <- deltaLat / gridRes
 grd <- GridTopology(vals[,1],c(gridRes,gridRes),c(gridSizeX,gridSizeY))
 pts <- SpatialPoints(coordinates(grd))
 pts1 <- SpatialPointsDataFrame(as.data.frame(pts), data=as.data.frame(rep(1,nrow(as.data.frame(pts)))))
-Overlay=overlay(pts1,border)
+proj4string(pts1)=CRS("+init=epsg:2078")
+Overlay<-over(pts1,border)
 pts1$border=Overlay
 nona<-na.exclude(as.data.frame(pts1))
 coordinates(nona)=~x+y
 gridded(nona) <- TRUE
-proj4string(nona)=CRS("+init=epsg:2078")  #remeber to set the coordinate system also for the prediction grid
+proj4string(nona)=CRS("+init=epsg:2078")  #importante asignar el sistema de coordenadas para la grid de prediccion
 writeAsciiGrid(nona,"prediction_grid.asc")
 
-##See how our grid looks like
+##Mira como se muestra la grid
 plot(nona)
 
 
-#Fitting the variogram
-#first plot the variogram
+#Ajuste de modelo de variograma
+#Primero graficar el variograma
 plot(variogram(Oxigen~1,data))
 
-#then, create a variogram model
-mod<-vgm(psill=var(data$Oxigen),model="Sph",range=sqrt(areaSpatialGrid(org_mat))/4,nugget=0) #From Spatial-analyst.net
+#luego, crear el modelo de variograma
+mod<-vgm(psill=var(data$Oxigen),model="Sph",range=sqrt(areaSpatialGrid(org_mat))/4,nugget=0) #desde Spatial-analyst.net
 
-#second, fit the variogram
-#let's start trying to fit it the REML model
+#Segundo, Ajuste del variograma
+#Empezamos probando el ajuste con el modelo REML
 fit_reml<-fit.variogram.reml(Oxigen~1,data,model=mod)
 
 plot(variogram(Oxigen~1,data),fit_reml,main="REML Model")
 
 
-#now, we can try to fit the variogram with other algorithm
-#for instance with the Ordinary Least Sqaure
+#ahora, probemos el ajuste con algun otro algoritmo
+#para ello con el modelo Ordinary Least Sqaure (OLS)
 fit_ols<-fit.variogram(variogram(Oxigen~1,data),model=mod,fit.method=6)
 
 plot(variogram(Oxigen~1,data),fit_ols,main="OLS Model")
 
 
-#Kriging 1-out Cross Validation
+#salida 1 validacion cruzada de Kriging
 cross1<-krige.cv(Oxigen~1,data,model=fit_reml)
 
-#Goodness of Fit of the Cross Validation
-RSQR<-as.numeric(cor.test(data$Oxigen,cross1$var1.pred)$estimate)^2  #Pearson's R Squared
+#prueba de bondad de ajuste de la validacion cruzada
+RSQR<-as.numeric(cor.test(data$Oxigen,cross1$var1.pred)$estimate)^2  #R cuadrado
 RMSD<-sqrt(sum((cross1$residual)^2)/length(data$Oxigen))             #Root Mean Square Deviation
 
 
-#Let's try a cross validation using the OLS model
+#Probemos la validacion cruzada del modelo OLS
 cross1<-krige.cv(Oxigen~1,data,model=fit_ols)
 
-#Goodness of Fit of the Cross Validation
+#prueba de bondad de ajuste de la validacion cruzada
 RSQR<-as.numeric(cor.test(data$Oxigen,cross1$var1.pred)$estimate)^2  #Pearson's R Squared
 RMSD<-sqrt(sum((cross1$residual)^2)/length(data$Oxigen))             #Root Mean Square Deviation
 
-#Plot observed versus residuals
+#Grafico de observados versus residuales
 plot(data$Oxigen,cross1$var1.pred,asp=1,xlab="Observed",ylab="Predicted")
 abline(0,1,col="red",cex=0.5)
 
 
-#Independent validation
-#in order to try an independent validation we first need to subset the data into
-#a training and a test subset.
-#Then, we use the training dataset to predict the value in the test dataset.
+#Validacion independiente
+#para probar una validacion independiente, primero necesitamos separar los datos en
+#un dataset de entrenamiento y un dataset de validacion.
+#Luego, con el dataset de entrenamiento intenramos predecir los valores del dataset de validacion 
 
-i<-sample(nrow(data),round(nrow(data)*10/100)) #exclude 10% of the data
+i<-sample(nrow(data),round(nrow(data)*10/100)) #excluye el 10% de los datos
 
 training<-data[!data$ID%in%i,]
 test<-data[data$ID%in%i,]
 
-#krige the trainig subset
+#interpolar con krige en dataset de entrenamiento
 krig<-krige(Oxigen~1,training,model=fit_ols,newdata=test)
 
-#Goodness of Fit of the Cross Validation
+#prueba de bondad de ajuste de la validacion cruzada
 RSQR<-as.numeric(cor.test(test$Oxigen,krig$var1.pred)$estimate)^2  #Pearson's R Squared
 RMSD<-sqrt(sum((test$Oxigen-krig$var1.pred)^2)/length(test$Oxigen))             #Root Mean Square Deviation
 
-#Plot observed versus residuals
+#Grafico de observedos versus residuales
 plot(test$Oxigen,krig$var1.pred,asp=1)
 abline(0,1,col="red",cex=0.5)
 
-#The results are apparently better, just because the number of observation is smaller
-#in this case, because the area is a field the best cross-validation is the one embedded into gstat
-#but for larger areas, catchment or landscape scale, this validation procedure is less time and RAM consuming
+#Los resultados son aparentemente mejores, esto se debe a que el numero de observaciones es mas pequeno
+#en este caso, porque gstat es mas especializado para este tipo de validacion cruzada en estas areas
+#pero para grandes areas, a escala de cuenca o paisaje, esta validacion toma mayor tiempo y uso de memoria RAM
 
 
-#Interpolation and Map creation
-#now that we finished the cross-validation part we can proceed to the creation of the map
+#Interpolacion and Creacion del mapa
+#Ahora que hemos terminado la valizacion cruzada podermos generar el mapa
 map<-krige(Oxigen~1,data,model=fit_ols,newdata=nona)
 
 spplot(map,"var1.pred",col.regions=terrain.colors(50))
