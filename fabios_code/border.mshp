@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SAGA_METADATA>
+  <HISTORY>
+    <MODULE>Create New Shapes Layer</MODULE>
+    <OPTION type="text" id="NAME" name="Name">New Shapes Layer</OPTION>
+    <OPTION type="choice" id="TYPE" name="Shape Type">3</OPTION>
+    <OPTION type="integer" id="NFIELDS" name="Number of Attributes">2</OPTION>
+    <PARAMETERS name="Attributes" id="FIELDS" type="parameters">
+      <OPTION type="text" id="NAME000" name="Name">ID</OPTION>
+      <OPTION type="choice" id="TYPE000" name="Type">3</OPTION>
+      <OPTION type="text" id="NAME001" name="Name">Name</OPTION>
+      <OPTION type="choice" id="TYPE001" name="Type">0</OPTION>
+    </PARAMETERS>
+  </HISTORY>
+  <SOURCE>
+    <FILE>F:\R Video Course\3 lesson\border.shp</FILE>
+  </SOURCE>
+</SAGA_METADATA>
