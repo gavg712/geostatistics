@@ -22,23 +22,19 @@ Elevacion$y <- Elevacion$CoordY
 coordinates(Elevacion) = ~x + y
 plot(Elevacion)
 
-#Creación de un grid para la interpolación
-min(Elevacion$x)
-max(Elevacion$x)
-min(Elevacion$y)
-max(Elevacion$y)
-rango.x <- as.numeric(c(731864, 778748))
+#Obtención del boundingBox del área
+rango.x <- as.numeric(c(min(Elevacion$x), max(Elevacion$x)))
+rango.y <- as.numeric(c(min(Elevacion$y), max(Elevacion$y)))
 
-rango.y <- as.numeric(c(9948341, 9968555))
-grd <- expand.grid(x = seq(from = rango.x[1], to = rango.x[2], by =
-2000), y = seq(from = rango.y[1], to = rango.y[2], by = 2000))
+#Creación de un grid para la interpolación
+grd <- expand.grid(x = seq(from = rango.x[1], to = rango.x[2], by = 2000), 
+                    y = seq(from = rango.y[1], to = rango.y[2], by = 2000))
 coordinates(grd) <- ~x + y
 gridded(grd) <- TRUE
 plot(grd, cex= 1.5, col = "grey")
 
 #Ubicación de puntos de Elevacion en el grid
 points(Elevacion, pch = 1, col = "red", cex = 1)
-
 
 #################
 #IDW
@@ -51,10 +47,10 @@ names(IDW.resultado)[1:3] <- c("X", "Y", "Elevacion.estimada")
 IDW.resultado
 install.packages("ggplot2")
 library(ggplot2)
-ggplot() + geom_tile(data = IDW.resultado, aes(x = X, y = Y, fill =
-Elevacion.estimada)) + geom_point(data = Elev, aes(x = CoordX , y =
-CoordY), shape = 18, colour = "red")
-
+ggplot() + geom_tile(data = IDW.resultado, 
+                    aes(x = X, y = Y, fill = Elevacion.estimada)) + 
+            geom_point(data = Elev, aes(x = CoordX , y = CoordY), 
+                    shape = 18, colour = "red")
 
 ##################################
 #Semivariograma
@@ -71,13 +67,11 @@ summary(distancias)
 
 #Cálculo de distancia h o tamaño de lag si se trabaja con 10 lags. Se
 divide la mitad de la distancia máxima para el número de lags
-50220/2
-25110/10
-
+lag <- (max(distancias)/2)/10
 
 #################
 #Binning
-breaks = seq(0, 2511, l = 11)
+breaks = seq(0, lag, l = 11)
 
 
 #################
@@ -109,7 +103,6 @@ plot(semivariograma2.nube.puntos, main = "classical estimator")
 
 #Sobreposición de una línea de modelo de variograma sobre el modelo empírico. Se 
 #utiliza el semivariograma2 como ejemplo
-
 plot(semivariograma2,type = "b", main = "Variogram: Elevac")
 lines.variomodel(cov.model = "gaussian", cov.pars = c(2000000, 25000),
 nugget = 0, max.dist = 100000, lwd = 3)
@@ -124,9 +117,8 @@ spplot(Kriging["var1.pred"], main = "Kriging Ordinario")
 spplot(Kriging,col.regions=rev(terrain.colors(100)), 
         names.attr=c("Predictions","Variance"), main="Kriging Ordinario",pch=2,
         cex=2)
-        
-#################
 
+#################
 #Kriging Simple
 Kriging.Simple <- krige(formula = Elevac ~ 1, locations = Elevacion, newdata = grd, beta = 10)
 spplot(Kriging.Simple["var1.pred"], main = "Kriging Simple")
@@ -136,4 +128,3 @@ spplot(Kriging.Simple["var1.pred"], main = "Kriging Simple")
 Kriging.Universal <- krige(formula = Elevac ~ 1, locations = Elevacion,
                             newdata = grd, block = c(1000,1000))
 spplot(Kriging.Universal["var1.pred"], main = "Kriging Universal")
-
