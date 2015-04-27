@@ -91,7 +91,7 @@ semivariograma <- variog(coords = Elev[,1:2], data = Elev[,3], option=c("bin"),
                         breaks = breaks)
 
 plot(semivariograma,type = "b", main = "Variogram: Elevac")
-reporte <- cbind(c(1:10), semivariograma$v, semivariograma$n)
+reporte <- cbind(c(1:length(semivariograma$n)), semivariograma$v, semivariograma$n)
 colnames(reporte) <- c("lag", "semivarianza", "Número de pares en bins")
 reporte
 
@@ -100,7 +100,7 @@ reporte
 #Semivariograma sin tomar en cuenta una distancia h predefinida
 semivariograma2 <- variog(coords=Elev[,1:2], data=Elev[,3], breaks="default")
 plot(semivariograma2,type = "b", main = "Variogram: Elevac")
-reporte2 <- cbind(c(1:10), semivariograma2$v, semivariograma2$n)
+reporte2 <- cbind(c(1:length(semivariograma2$n)), semivariograma2$v, semivariograma2$n)
 colnames(reporte2) <- c("lag", "semivarianza", "Número de pares en bins")
 reporte2
 
