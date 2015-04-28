@@ -143,5 +143,5 @@ Kriging.Universal <- krige(formula = Elevac ~ 1, locations = Elevacion,
 spplot(Kriging.Universal["var1.pred"], main = "Kriging Universal")
 
 #################################
-#########CREADO POR PABLO CABRERA
+#########CREADO POR PABLO CABRERA BARAONA
 ####MODIFICADO POR GABRIEL GAONA

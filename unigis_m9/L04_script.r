@@ -153,5 +153,5 @@ gwr <- gwr(NoNacViv ~ Dep_AHP_N + Dist_healt, data = variablesGWR,
 gwr
 
 #################################
-#########CREADO POR PABLO CABRERA
+#########CREADO POR PABLO CABRERA BARAONA
 ####MODIFICADO POR GABRIEL GAONA

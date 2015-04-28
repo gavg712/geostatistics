@@ -97,5 +97,5 @@ plot(K)
 plot(K, sqrt(iso/pi) ~ r)
 
 #################################
-#########CREADO POR PABLO CABRERA
+#########CREADO POR PABLO CABRERA BARAONA
 ####MODIFICADO POR GABRIEL GAONA
