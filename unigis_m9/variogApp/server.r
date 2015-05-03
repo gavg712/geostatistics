@@ -1,9 +1,8 @@
-#source("helpers.r")
+source("helpers.r")
 options(shiny.maxRequestSize=30*1024^2)
 shinyServer(function(input, output, session) {
         df = read.table("data/Elevacion.txt", header=TRUE,sep=",",)
 require(geoR)
-require(plotrix)
         #Construir el dataframe para representar en el variograma
         dt.variog <- data.frame(df[,1], df[,2], df[,3])
         distancias <- dist(dt.variog[,1:2])
