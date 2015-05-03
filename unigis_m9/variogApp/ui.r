@@ -1,7 +1,7 @@
 shinyUI(fluidPage(
     titlePanel(h1("Varigramas en R",align = "center")),
     sidebarLayout(
-        sidebarPanel(p("Modeifique los valores para ajustar el resultado"),
+        sidebarPanel(p("Modifique los valores para ajustar el resultado"),
             tags$hr(),
             fluidRow(h4("Semivariograma experimental"),
                 column(4, checkboxInput('userlags', h6('Ajustar bines manualmente'), FALSE)),
