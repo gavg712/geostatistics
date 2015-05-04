@@ -1,5 +1,5 @@
 shinyUI(fluidPage(
-    titlePanel(h1("Varigramas en R",align = "center")),
+    titlePanel(h1("Variografía en R",align = "center")),
     sidebarLayout(
         sidebarPanel(p("Modifique los valores para ajustar el resultado"),
             tags$hr(),
@@ -34,7 +34,7 @@ shinyUI(fluidPage(
         mainPanel(h5(textOutput("text1"), align="center"),
             fluidRow(
                 column(7,plotOutput("plot1"),
-                helpText(p("Esta aplicación está orientada al aprendizaje sobre variogramas en R. Los datos utilizados fueron proporcionados por Pablo Cabrera Barona. El código y datos se encuentran disponibles en ", a("Github", href = "https://github.com/gavg712/geostatistics/tree/master/unigis_m9/varioApp")))
+                helpText(p("Esta aplicación está orientada al aprendizaje sobre variogramas en R. Los datos utilizados fueron proporcionados por Pablo Cabrera Barona. El código y datos se encuentran disponibles en ", a("Github", href = "https://github.com/gavg712/geostatistics/tree/master/unigis_m9/variogApp")))
                 ),
                 column(4,h5("Reporte", align="center"), tableOutput("report"))
             )

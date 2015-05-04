@@ -21,7 +21,7 @@ require(geoR)
                 }
         #Graficohttp://shiny.rstudio.com/reference/shiny/latest/tableOutput.html
         plot(   vg,type = "p", pch=20,
-                main = paste("Variograma: Experimental + Modelo ", input$model), 
+                main = paste("Semivariograma: Experimental + Modelo ", input$model), 
                 xlab="Distancia", ylab="Semivarianza")
         if (input$addmodel == TRUE){
         lines.variomodel(   cov.model=input$model, 
@@ -44,6 +44,6 @@ require(geoR)
                     variog(coords = dt.variog[,1:2], data = dt.variog[,3], 
                         option=c("bin"), breaks = breaks)
                 }
-        data.frame("Distancia lag"=vg$u, "Semivarianza"=vg$v, "Pares"=vg$n)
+        data.frame("Distancia.lag"=vg$u, "Semivarianza"=vg$v, "Pares"=vg$n)
         })
 })
