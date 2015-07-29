@@ -42,7 +42,7 @@ shinyServer(function(input, output){
        lines.variomodel(   cov.model=input$model, 
                            cov.pars=c(input$sill, input$range), 
                            nugget=input$nugget, 
-                           max.dist = 100000, 
+                           max.dist = max(distancias), 
                            kappa=kappa,
                            lwd = 3)
        }
