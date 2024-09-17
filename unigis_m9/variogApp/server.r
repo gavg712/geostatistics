@@ -34,18 +34,33 @@ shinyServer(function(input, output){
      names(dt.variog) <- names(db)[c(input$colX,input$colY, input$colZ)]
      dt.variog <- st_as_sf(dt.variog, coords = names(db)[1:2], remove = FALSE, crs = 32717)
      distancias <- units::drop_units(st_distance(dt.variog))
-     
-     cutoff <- units::drop_units(st_bbox(dt.variog) %>% 
-                                   st_as_sfc() %>%  
-                                   st_cast("POINT") %>% 
-                                   st_distance() %>% 
-                                   max())/3
+     bbx <- st_bbox(dt.variog)
+     diagonal <- units::drop_units(bbx %>% 
+                                     st_as_sfc() %>%  
+                                     st_cast("POINT") %>% 
+                                     st_distance() %>% 
+                                     max())
+     cutoff.bkp <- cutoff <- diagonal/3
      width <- cutoff/15
      
+     output$pointOut <- renderUI({
+       div(HTML(paste0(
+         'X-min: ', bbx[1], "<br/>",
+         'Y-min: ', bbx[2], "<br/>",
+         'X-max: ', bbx[3], "<br/>",
+         'Y-max: ', bbx[4], "<br/>",
+         'Número de puntos: ', nrow(dt.variog), "<br/>",
+         "Distancia máxima: ", max(distancias), "<br/>", 
+         "Diagonal de los datos: ", diagonal, "<br/>", 
+         "Cutoff sugerido: ", cutoff.bkp, "<br/>", 
+         "Cutoff actual: ", cutoff, "<br/>")))
+     })
+     
      ##Control de tipo de binneo
-     if(input$userlags)
+     if(input$userlags){
        cutoff <- input$cutoff
        width <- cutoff/input$nlag
+     }
      
      # formula variogram
      form <- paste0(names(db)[3], "~1") %>% as.formula()
