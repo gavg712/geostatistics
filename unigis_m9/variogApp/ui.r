@@ -48,19 +48,19 @@ fluidPage(
                 column(6,numericInput("kappa", label = h6("Kappa"), value = 1))
             ) #parametros smvg teorico hasta
         ),
-        mainPanel(h5(textOutput("text1"), align="center"),
+        mainPanel(width = 9,
+          h5(textOutput("text1"), align="center"),
                   fluidRow(
                   h5("Vista rápida de los datos cargados", align="center"), 
                   verbatimTextOutput("dataOut")),
             fluidRow(
-                column(12,plotOutput("plot1"),
-                       h5("Resumen del modelo", align="center"), 
-                       tableOutput("dataModel")
-                
-            )
+                column(9, plotOutput("plot1")), 
+                column(3, uiOutput("pointOut"))),
+            fluidRow(
+              h5("Resumen del modelo", align="center"), 
+              tableOutput("dataModel"))
         )
-    )
-), 
+    ), 
 helpText(align="center", 
   p("Esta aplicación está orientada al aprendizaje sobre variogramas en R. Los datos utilizados fueron proporcionados por Pablo Cabrera Barona. El código y datos se encuentran disponibles en ", 
     a("Github", href = "https://github.com/gavg712/geostatistics/tree/master/unigis_m9/variogApp")))
